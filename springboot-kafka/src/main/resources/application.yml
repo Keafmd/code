@@ -1,0 +1,50 @@
+spring:
+  kafka:
+    listener:
+      missing-topics-fatal: false
+
+    producer:
+      batch-size: 16384
+
+      retries: 0
+
+      buffer-memory: 33554432
+
+      acks: 1
+
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+      properties:
+        linger:
+          ms: 0
+
+    bootstrap-servers: 112.126.74.249:9092,112.126.74.249:9093
+
+    consumer:
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+      auto:
+        commit:
+          interval:
+            ms: 1000
+
+      auto-offset-reset: latest
+
+      enable-auto-commit: true
+
+      properties:
+        request:
+          timeout:
+            ms: 180000
+
+        session:
+          timeout:
+            ms: 120000
+
+        group:
+          id: defaultConsumerGroup
+
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+

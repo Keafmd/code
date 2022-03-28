@@ -55,17 +55,28 @@ public class MaximumSubarraySumWithOneDeletion {
 
     //leetcode submit region begin(Prohibit modification and deletion)
     class Solution {
+        //状态dp
         public int maximumSum(int[] arr) {
+            //dp0 没有删除,默认第一个  ,dp1 已经删除过了，默认0，删除第一个
             int dp0 = arr[0], res = dp0, dp1 = 0;
+            //第一个考虑过了，默认从第二个考虑
             for(int i=1;i<arr.length;i++){
                 int num = arr[i];
                 if(num>0){
+                    //正常dp 两种写法都可以 前面的和是负数，不要了，结果取当前这个  ； 前面的加当前的
                     dp0 = Math.max(dp0,0)+num;
+//                    dp0 = Math.max(num,dp0+num);
+                    //第一个删除过了，后面的所以必须加上
                     dp1+=num;
                 }else{
+                    // 删除过了的结果： 删除这一个num 那结果就是dp0, 前面删除过了，所以加上这个
+                    //两种情况取最大的
                     dp1 = Math.max(dp0,dp1+num);
-                    dp0 = Math.max(0, dp0) + num;
+                    //正常dp
+//                    dp0 = Math.max(0, dp0) + num;
+                    dp0 = Math.max(num,dp0+num);
                 }
+                //每次都更新res
                 res = Math.max(res,dp0);
                 res = Math.max(res,dp1);
             }

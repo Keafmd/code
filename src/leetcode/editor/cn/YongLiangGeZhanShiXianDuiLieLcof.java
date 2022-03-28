@@ -60,14 +60,17 @@ class CQueue {
     }
     
     public int deleteHead() {
+        //判断出队栈 是不是空的，是空的话，需要把入队栈的数，全挪到出队栈中
         if(stkb.isEmpty()){
             while(!stka.isEmpty()){
                 stkb.push(stka.pop());
             }
         }
+        //如果出队栈不为空，弹出栈顶
         if(!stkb.isEmpty()){
             return stkb.pop();
         }
+        //出队栈为空，输出-1
         return -1;
 
     }
