@@ -1,0 +1,12 @@
+# 连接数据源
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://116.62.177.61:4306/test?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+server:
+  port: 8080
+
+# mybatis-plus
+mybatis-plus:
+  mapper-locations: com.keafmd.springdemo.mapper.*.xml
