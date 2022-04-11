@@ -3,7 +3,7 @@ spring:
   datasource:
     username: root
     password: root
-    url: jdbc:mysql://116.62.177.61:4306/test?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://114.115.148.110:4306/test?useUnicode=true&characterEncoding=UTF-8&useSSL=false
 server:
   port: 8080
 

@@ -1,6 +1,7 @@
 package com.keafmd.springdemo.pojo;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * Keafmd
@@ -11,6 +12,7 @@ import lombok.Data;
  * @date: 2022-04-07 11:39
  */
 @Data
+@Accessors(chain = true)
 public class User {
 
     private String id;
