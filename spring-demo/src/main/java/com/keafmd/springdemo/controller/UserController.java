@@ -31,19 +31,12 @@ public class UserController {
     //更新用户的信息
     @PostMapping("/updateUser/{userId}")
     public Boolean updateUser(@PathVariable String userId) {
-        //使userId为条件把num字段加5
-
-//        LambdaQueryWrapper<User> queryWrapper = Wrappers.<User>lambdaQuery()
-//                .eq(User::getId, userId);
+        //把num字段加5
         LambdaUpdateWrapper<User> updateWrapper = Wrappers.<User>lambdaUpdate()
                 .eq(User::getId, userId)
-                .setSql("count = count + 5");
+                .setSql("count = count + 5 + sleep(5) ");
 
-
-        return userService.update(null, updateWrapper);
-//        User one = userService.getOne(queryWrapper);
-//        one.setNum(String.valueOf(Integer.parseInt(one.getNum())+5));
-//        return userService.updateById(one);
+        return userService.update(updateWrapper);
     }
 
 

@@ -35,20 +35,51 @@
 // 做题时间：2022-04-14 17:59:50
 package leetcode.editor.cn;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Stack;
 
 public class CalculatorLcci{
     public static void main(String[] args) {
         Solution solution = new CalculatorLcci().new Solution();
+        System.out.println(solution.calculate(" 3/2 "));
         
     }
     
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public int calculate(String s) {
+        s =s.replaceAll(" ","");
+        Deque<Integer> stack = new ArrayDeque<>();
+        char flag = '+';
+        int num = 0;
+        for(int i=0;i<s.length();i++){
+            if(Character.isDigit(s.charAt(i))){
+                num = num*10+s.charAt(i)-'0';
+            }
+            if(!Character.isDigit(s.charAt(i)) || i==s.length()-1){
+                if(flag=='+'){
+                    stack.push(num);
+                }else if(flag=='-'){
+                    stack.push(-num);
+                }else if(flag=='*'){
+                    stack.push(stack.pop()*num);
+                }else if(flag=='/'){
+                    stack.push(stack.pop()/num);
+                }
+                flag = s.charAt(i);
+                num =0;
+            }
+
+        }
+        int res =0;
+        while(!stack.isEmpty()){
+            res += stack.pop();
+        }
+
+        return res;
 
 
-        return 0;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
