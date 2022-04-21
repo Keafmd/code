@@ -10,3 +10,10 @@ server:
 # mybatis-plus
 mybatis-plus:
   mapper-locations: com.keafmd.springdemo.mapper.*.xml
+
+
+enterprise:
+  tianyan:
+    token: 5d9aba21-4903-4bc8-b3b7-f9f51a151493
+    url: http://open.api.tianyancha.com/services/open/ic/baseinfo/normal?keyword=
+    allUrl: http://open.api.tianyancha.com/services/open/ic/baseinfoV2/2.0?keyword=
