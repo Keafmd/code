@@ -3,6 +3,7 @@ package com.keafmd.springdemo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.keafmd.springdemo.pojo.User;
 import com.keafmd.springdemo.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class UserController {
 
     @GetMapping("/getUser/{userId}")
     public User getUser(@PathVariable String userId) {
-        return userService.getById(userId);
+        return userService.getUserById(userId);
     }
 
     //更新用户的信息

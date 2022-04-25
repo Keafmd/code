@@ -1,12 +1,17 @@
 package com.keafmd.springdemo.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keafmd.springdemo.handle.SingleThreadConnectionHolder;
 import com.keafmd.springdemo.handle.TransactionManager;
 import com.keafmd.springdemo.mapper.UserMapper;
 import com.keafmd.springdemo.pojo.User;
 import com.keafmd.springdemo.service.IUserService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +19,11 @@ import javax.sql.DataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Keafmd
@@ -30,11 +40,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     private final DataSource dataSource;
 
-    private TransactionManager transactionManager;
+    private final TransactionManager transactionManager;
 
-    public UserServiceImpl(DataSource dataSource) {
+    public UserServiceImpl(DataSource dataSource, ObjectMapper objectMapper, RedisTemplate<String, String> redisTemplate) {
         this.dataSource = dataSource;
         transactionManager = new TransactionManager(dataSource);
+        this.objectMapper = objectMapper;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -169,6 +181,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         User userI = baseMapper.selectById(inUser);
         userI.setCount(userI.getCount() + money);
         baseMapper.updateById(userI);
+    }
+
+
+    private static final String USER_KEY = "USER_KEY";
+
+    private final ObjectMapper objectMapper;
+
+    private final RedisTemplate<String, String> redisTemplate;
+
+
+    @Override
+    @SneakyThrows
+    public User getUserById(String userId) {
+
+        Map<String,User> userMap = new HashMap<>();
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(USER_KEY))) {
+            List<User> users = list();
+            userMap = users.stream().collect(Collectors.toMap(i->i.getId(),user->user));
+            String valueAsString = objectMapper.writeValueAsString(userMap);
+            //通过ValueOperations设置值
+            ValueOperations<String, String> ops = redisTemplate.opsForValue();
+            //48小时
+            ops.set(USER_KEY, valueAsString, 48, TimeUnit.HOURS);
+        }else{
+            //通过ValueOperations获取值
+            String val = redisTemplate.opsForValue().get(USER_KEY);
+            JavaType javaType = objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, User.class);
+            userMap = objectMapper.readValue(val, javaType);
+        }
+        return userMap.get(userId);
     }
 
 }

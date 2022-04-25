@@ -22,4 +22,6 @@ public interface IUserService extends IService<User> {
     void transferEasy(String outUser, String inUser, Integer money) throws SQLException;
 
     void myTtransfer(String outUser, String inUser, Integer money) throws SQLException;
+
+    User getUserById(String userId);
 }
