@@ -60,10 +60,7 @@ public class JasyptUtils {
     public static void main(String[] args) {
         // 加密
         // 盐值替换成自己熟悉的口令，此口令为解密密钥，需要妥善保管。
-        System.out.println(encryptPwd("keafmd", "root"));
-        System.out.println(encryptPwd("keafmd", "101.42.104.99"));
-        System.out.println(encryptPwd("keafmd", "18044229"));
-        System.out.println(encryptPwd("keafmd", "6379"));
+        System.out.println(encryptPwd("keafmd", "123456"));
     }
 }
 
