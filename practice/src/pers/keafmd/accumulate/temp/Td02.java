@@ -1,4 +1,4 @@
-package pers.keafmd.accumulate.test;
+package keafmd.accumulate.temp;
 
 /**
  * Keafmd

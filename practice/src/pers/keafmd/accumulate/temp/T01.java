@@ -1,4 +1,4 @@
-package pers.keafmd.accumulate.test;
+package keafmd.accumulate.temp;
 
 import java.util.ArrayList;
 import java.util.List;

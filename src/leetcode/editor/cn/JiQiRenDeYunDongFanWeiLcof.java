@@ -31,10 +31,15 @@
 // 机器人的运动范围
 // 做题时间：2022-04-28 10:57:03
 package leetcode.editor.cn;
+
+import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class JiQiRenDeYunDongFanWeiLcof{
     public static void main(String[] args) {
         Solution solution = new JiQiRenDeYunDongFanWeiLcof().new Solution();
-        
+        AtomicInteger result = new AtomicInteger(0);
+        BigDecimal bigDecimal = new BigDecimal(0);
     }
     
 //leetcode submit region begin(Prohibit modification and deletion)
