@@ -24,7 +24,7 @@ public class BatchImport {
 
     //读取excel文件
     public static void readExcel() throws FileNotFoundException {
-        String fileName = "C:\\Users\\章贺龙\\Desktop\\inFile.xlsx";
+        String fileName = "C:\\Users\\章贺龙\\Desktop\\inFile1.xlsx";
         // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
         EasyExcel.read(fileName, Api.class, new ExcelListener()).sheet().doRead();
     }
