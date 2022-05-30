@@ -57,7 +57,7 @@ public class ExcelListener extends AnalysisEventListener<Api> {
 
         //一级api
         String apiSql = "INSERT INTO `ciic_iba_upms`.`upms_api`(`id`, `code`, `name`, `pid`, `path`, `method`, `create_time`, `create_by`, `update_time`, `update_by`, `deleted`, `permission`, `system_id`) VALUES " +
-                "("+apiId+", NULL, '"+api.getMenu()+"', -1, NULL, NULL, '"+createTime1+"', '1385053845579603969', NULL, NULL, 0, 2, "+"(SELECT id from (SELECT id FROM `upms_system` where name = '管理端') a)"+");\n";
+                "("+apiId+", NULL, '"+api.getMenu()+"', -1, NULL, NULL, '"+createTime1+"', '1385053845579603969', NULL, NULL, 0, 2, "+"(SELECT id from (SELECT id FROM `upms_system` where name = '招聘端') a)"+");\n";
 
         if(!apiSet.contains("-- 一级api"+api.getMenu())){
             apiSet.add("-- 一级api"+api.getMenu());
@@ -69,7 +69,7 @@ public class ExcelListener extends AnalysisEventListener<Api> {
         String apiId2 = "1513691" + apiUuid2;
         //二级api
         String apiSql2 = "INSERT INTO `ciic_iba_upms`.`upms_api`(`id`, `code`, `name`, `pid`, `path`, `method`, `create_time`, `create_by`, `update_time`, `update_by`, `deleted`, `permission`, `system_id`) VALUES " +
-                "("+apiId2+", NULL, '"+api.getFunction()+"', "+"(SELECT id FROM (SELECT id from `ciic_iba_upms`.`upms_api` WHERE system_id = (SELECT id from (SELECT id FROM `upms_system` where name = '管理端') a) and name = '"+api.getMenu()+"') c )"+", NULL, NULL, '"+createTime1+"', '1385053845579603969', NULL, NULL, 0, 2, "+"(SELECT id from (SELECT id FROM `upms_system` where name = '管理端') b)"+");\n";
+                "("+apiId2+", NULL, '"+api.getFunction()+"', "+"(SELECT id FROM (SELECT id from `ciic_iba_upms`.`upms_api` WHERE system_id = (SELECT id from (SELECT id FROM `upms_system` where name = '招聘端') a) and name = '"+api.getMenu()+"') c )"+", NULL, NULL, '"+createTime1+"', '1385053845579603969', NULL, NULL, 0, 2, "+"(SELECT id from (SELECT id FROM `upms_system` where name = '招聘端') b)"+");\n";
 
         if(!apiSet.contains("-- 二级api"+api.getFunction())){
             apiSet.add("-- 二级api"+api.getFunction());
@@ -77,6 +77,10 @@ public class ExcelListener extends AnalysisEventListener<Api> {
         }
 
 
+        String code = api.getCode();
+        //第二个_ 位置
+        String code1 = code.substring(0,code.indexOf(","));
+        String code2 = code.substring(code.indexOf(",")+1);
 
         //一级operation
 
@@ -84,7 +88,7 @@ public class ExcelListener extends AnalysisEventListener<Api> {
         String operationId = "1513700" + operationUuid;
 
         String operationSql1 = "INSERT INTO `ciic_iba_upms`.`upms_operation`(`id`, `pid`, `system_id`, `code`, `name`, `description`, `type`, `action`, `sort`, `icon`, `create_time`, `create_by`, `update_time`, `update_by`, `deleted`) VALUES " +
-                "("+operationId+", -1, (SELECT id from (SELECT id FROM `upms_system` where name = '管理端') a), NULL, '"+api.getMenu()+"', NULL, NULL, NULL, NULL, NULL, '"+createTime1+"', '1385053845579603969', NULL, NULL, 0);\n";
+                "("+operationId+", -1, (SELECT id from (SELECT id FROM `upms_system` where name = '招聘端') a), NULL, '"+api.getMenu()+"', NULL, NULL, NULL, NULL, NULL, '"+createTime1+"', '1385053845579603969', NULL, NULL, 0);\n";
 
         if(!operationSet.contains("-- 一级operation"+api.getMenu())){
             operationSet.add("-- 一级operation"+api.getMenu());
@@ -96,7 +100,7 @@ public class ExcelListener extends AnalysisEventListener<Api> {
         String operationUuid1 = RandomUtil.randomNumbers(12);
         String operationId1 = "1513701" + operationUuid1;
         String operationSql2 = "INSERT INTO `ciic_iba_upms`.`upms_operation`(`id`, `pid`, `system_id`, `code`, `name`, `description`, `type`, `action`, `sort`, `icon`, `create_time`, `create_by`, `update_time`, `update_by`, `deleted`) VALUES " +
-                "("+operationId1+", (select id from (SELECT id FROM `upms_operation` where `name` = '"+api.getMenu()+"') a), (SELECT id from (SELECT id FROM `upms_system` where name = '管理端') b), NULL, '"+api.getFunction()+"', NULL, NULL, NULL, NULL, NULL, '"+createTime1+"', '1385053845579603969', NULL, NULL, 0);\n";
+                "("+operationId1+", (select id from (SELECT id FROM `upms_operation` where `name` = '"+api.getMenu()+"') a), (SELECT id from (SELECT id FROM `upms_system` where name = '招聘端') b), '"+code1+"', '"+api.getFunction()+"', NULL, NULL, NULL, NULL, NULL, '"+createTime1+"', '1385053845579603969', NULL, NULL, 0);\n";
 
         if(!operationSet2.contains("-- 二级operation"+api.getFunction())){
             operationSet2.add("-- 二级operation"+api.getFunction());
@@ -141,12 +145,12 @@ public class ExcelListener extends AnalysisEventListener<Api> {
                     //  添加api
                     String sql = "INSERT INTO `ciic_iba_upms`.`upms_api`(" +
                             "`id`, `code`, `name`, `pid`, `path`, `method`, `create_time`, `create_by`, `update_time`, `update_by`, `deleted`, `permission`, `system_id`) VALUES " +
-                            "(" + id + ", NULL, '" + requestName + "', (select id from (SELECT id from upms_api where system_id = "+"(SELECT id from (SELECT id FROM `upms_system` where name = '管理端') b)"+" and name = '" + functionName + "') a), '" + requestPath + "', '" + requestMethod + "', '" + createTime + "', '1385053845579603969', NULL, NULL, 0, 2, (SELECT id from (SELECT id FROM `upms_system` where name = '管理端') b));\n";
+                            "(" + id + ", NULL, '" + requestName + "', (select id from (SELECT id from upms_api where system_id = "+"(SELECT id from (SELECT id FROM `upms_system` where name = '招聘端') b)"+" and name = '" + functionName + "') a), '" + requestPath + "', '" + requestMethod + "', '" + createTime + "', '1385053845579603969', NULL, NULL, 0, 2, (SELECT id from (SELECT id FROM `upms_system` where name = '招聘端') b));\n";
 //                System.out.println(sql);
 
                     apiList.add(sql);
                 } catch (Exception e) {
-                    System.out.println(apiStrs.toString());
+                    System.out.println(Arrays.toString(apiStrs));
                     e.printStackTrace();
                 }
             }
@@ -162,7 +166,7 @@ public class ExcelListener extends AnalysisEventListener<Api> {
 
             String subOptionSql = "INSERT INTO `ciic_iba_upms`.`upms_operation`" +
                     "(`id`, `pid`, `system_id`, `code`, `name`, `description`, `type`, `action`, `sort`, `icon`, `create_time`, `create_by`, `update_time`, `update_by`, `deleted`) VALUES " +
-                    "("+uuid+", "+"(select id from (SELECT id FROM `upms_operation` where `name` = '"+operationName+"') a)"+", (SELECT id from (SELECT id FROM `upms_system` where name = '管理端') b), NULL, '"+subOperationName+"', NULL, NULL, NULL, NULL, NULL, '"+createTime+"', '1385053845579603969', NULL, NULL, 0);\n";
+                    "("+uuid+", "+"(select id from (SELECT id FROM `upms_operation` where `name` = '"+operationName+"') a)"+", (SELECT id from (SELECT id FROM `upms_system` where name = '招聘端') b), '"+code2+"', '"+subOperationName+"', NULL, NULL, NULL, NULL, NULL, '"+createTime+"', '1385053845579603969', NULL, NULL, 0);\n";
 
             subOperationList.add(subOptionSql);
 //            System.out.println(subOptionSql);

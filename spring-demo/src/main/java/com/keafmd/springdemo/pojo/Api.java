@@ -21,6 +21,8 @@ public class Api{
     private String functionPoints;
     @ExcelProperty("接口")
     private String url;
+    @ExcelProperty("code")
+    private String code;
 
     @ExcelProperty("序号")
     private String serialNumber;
