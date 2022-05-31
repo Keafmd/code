@@ -60,6 +60,7 @@ public class DataJdbc {
     Set<String> upmsAgencySql = new HashSet<>();
     Set<String> upmsPassSql = new HashSet<>();
     Set<String> upmsUserPassSql = new HashSet<>();
+    Set<String> upmsInfoSql = new HashSet<>();
     Set<String> accountAndPass = new HashSet<>();
 
     public DataJdbc() throws FileNotFoundException {
@@ -315,8 +316,13 @@ public class DataJdbc {
 
             upmsUserPassSql.add(upmsuserpassSql);
 
-            String info = "INSERT INTO `upms_user_expand_info`(`id`, `user_id`, `group_id`, `type`, `value`) VALUES (i, i, '1', '1', '2022-05');";
-
+            String infoId = "166198774" + RandomUtil.randomNumbers(10);
+            String val = null;
+            if(StrUtil.isNotBlank(entity.getGraduateTime())){
+                val = DateUtil.formatDateTime(new Timestamp(Long.parseLong(entity.getGraduateTime())));
+            }
+            String info = "INSERT INTO `upms_user_expand_info`(`id`, `user_id`, `group_id`, `type`, `value`) VALUES ("+infoId+", "+id+", '1', '1', '"+val+"');";
+            upmsInfoSql.add(info);
 
         }
 
@@ -745,6 +751,12 @@ public class DataJdbc {
         System.out.println("--  学生开始");
         upmsUserStudentSql.forEach(System.out::println);
         System.out.println("--  学生结束");
+
+        System.out.println("--  学生拓展信息开始");
+        upmsInfoSql.forEach(System.out::println);
+        System.out.println("--  学生拓展信息结束");
+
+
 
         System.out.println("--  公司开始");
         upmsUserCompanySql.forEach(System.out::println);
