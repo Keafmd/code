@@ -40,6 +40,7 @@ public class DataJdbc {
 
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     PrintStream write = new PrintStream("C:\\Users\\章贺龙\\Desktop\\upmsUserInsert.sql");
+//    PrintStream write = new PrintStream("\\upmsUserInsert.sql");
 
 
 
@@ -63,6 +64,7 @@ public class DataJdbc {
     Set<String> upmsUserPassSql = new HashSet<>();
     Set<String> upmsInfoSql = new HashSet<>();
     Set<String> accountAndPass = new HashSet<>();
+    Set<String> exceptionSql = new HashSet<>();
 
     public DataJdbc() throws FileNotFoundException {
     }
@@ -190,8 +192,8 @@ public class DataJdbc {
         String result="";
         try {
             // 根据地址获取请求
-//            HttpGet request = new HttpGet("http://zpw-org-develop.ciicit.com.cn:31567/api/ciic-iba-system-service/area/id/"+area);//这⾥发送get请求
-            HttpGet request = new HttpGet("http://localhost:7012/area/id/"+area);//这⾥发送get请求
+            HttpGet request = new HttpGet("http://zpw-org-develop.ciicit.com.cn:31567/api/ciic-iba-system-service/area/id/"+area);//这⾥发送get请求
+//            HttpGet request = new HttpGet("http://localhost:7012/area/id/"+area);//这⾥发送get请求
             // 设置请求头信息
 //            request.setHeader("Authorization", token);//这里我定义的token定义的全局变量
             CloseableHttpClient httpClient = HttpClientBuilder.create().build();
@@ -215,12 +217,66 @@ public class DataJdbc {
     }
 
 
+    public Integer commonUserAndBizStudentCount(){
+        Integer num = 0;
+        try {
+            ResultSet resultSet = executeQuery("select  count(*) as num from ciicsqldev.dbo.Common_User a LEFT JOIN ciicsqldev.dbo.Biz_Student b on a.UserId = b.UserId WHERE a.UserType = 1 ");
+            // 获取ResultSet对象的列的数量、类型和属性。
+            ResultSetMetaData md= resultSet.getMetaData();
+            // 获取列的数量
+            int columnCount = md.getColumnCount();
+            // 将ResultSet对象的列名和值存到map中，再将map转换为json字符串，最后将json字符串转换为实体类对象
+            Map<String, Object> rowData = new HashMap<>();
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    if(rowData.containsKey(md.getColumnLabel(i))){
+                        rowData.put(md.getColumnLabel(i)+"2", resultSet.getObject(i));
+                    }
+                    rowData.put(md.getColumnLabel(i), resultSet.getObject(i));
+                }
+
+                num = (Integer)rowData.get("num");
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return num;
+
+    }
+    public Integer commonUserAndBizCompanyCount(){
+        Integer num = 0;
+        try {
+            ResultSet resultSet = executeQuery("select  count(*) as num  from ciicsqldev.dbo.Common_User a LEFT JOIN ciicsqldev.dbo.Biz_Company b on a.UserId = b.UserId WHERE a.UserType = 2 and a.SourceId is null ");
+            // 获取ResultSet对象的列的数量、类型和属性。
+            ResultSetMetaData md= resultSet.getMetaData();
+            // 获取列的数量
+            int columnCount = md.getColumnCount();
+            // 将ResultSet对象的列名和值存到map中，再将map转换为json字符串，最后将json字符串转换为实体类对象
+            Map<String, Object> rowData = new HashMap<>();
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    if(rowData.containsKey(md.getColumnLabel(i))){
+                        rowData.put(md.getColumnLabel(i)+"2", resultSet.getObject(i));
+                    }
+                    rowData.put(md.getColumnLabel(i), resultSet.getObject(i));
+                }
+                num = (Integer) rowData.get("num");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return num;
+
+    }
+
+
     /**
      * 获取CommonUserAndBizStudent
      */
-    public void toCommonUserAndBizStudent(){
+    public void toCommonUserAndBizStudent(String pageIndex,String pageSize){
         try {
-            ResultSet resultSet = executeQuery("select top 20 * from ciicsqldev.dbo.Common_User a LEFT JOIN ciicsqldev.dbo.Biz_Student b on a.UserId = b.UserId WHERE a.UserType = 1");
+            ResultSet resultSet = executeQuery("select *  from ciicsqldev.dbo.Common_User a LEFT JOIN ciicsqldev.dbo.Biz_Student b on a.UserId = b.UserId WHERE a.UserType = 1 order by a.UserId offset ("+pageIndex+"-1)*"+pageSize+" rows fetch next "+pageSize+" rows only ");
             // 获取ResultSet对象的列的数量、类型和属性。
             ResultSetMetaData md= resultSet.getMetaData();
             // 获取列的数量
@@ -251,9 +307,9 @@ public class DataJdbc {
     /**
      * 获取CommonUserAndBizCompany
      */
-    public void toCommonUserAndBizCompany(){
+    public void toCommonUserAndBizCompany(String pageIndex,String pageSize){
         try {
-            ResultSet resultSet = executeQuery("select top 20 * from ciicsqldev.dbo.Common_User a LEFT JOIN ciicsqldev.dbo.Biz_Company b on a.UserId = b.UserId WHERE a.UserType = 2 and a.SourceId is null");
+            ResultSet resultSet = executeQuery("select   *   from ciicsqldev.dbo.Common_User a LEFT JOIN ciicsqldev.dbo.Biz_Company b on a.UserId = b.UserId WHERE a.UserType = 2 and a.SourceId is null order by b.CompanyId offset ("+pageIndex+"-1)*"+pageSize+" rows fetch next "+pageSize+" rows only");
 //            ResultSet resultSet = executeQuery("select top 1000 a.userId,a.RelationId ,b.* from ciicsqldev.dbo.Common_User a LEFT JOIN ciicsqldev.dbo.Biz_Company b on a.UserId = b.UserId WHERE a.UserType = 2 and a.RelationId = '80A7456D-627C-4E3D-B0DB-CF87BF07FDBE'");
 //             获取ResultSet对象的列的数量、类型和属性。
             ResultSetMetaData md= resultSet.getMetaData();
@@ -294,9 +350,13 @@ public class DataJdbc {
         String birthday = null;
         String pwdInitFlag = "1"; //随机生成的密码
         String authStatus = "1"; //学生端为未认证
+        int snum = 0;
         for (CommonUserAndBizStudent entity : userList) {
+            System.out.println("正在处理学生数据["+snum+"]："+entity.getUsername());
+            snum++;
             String pas = RandomUtil.randomString(16);
-            password = passwordEncoder.encode(pas);
+//            password = passwordEncoder.encode(pas);
+            password = pas;
 //            if(StrUtil.isNotBlank(entity.getEmail())){
 //                password = passwordEncoder.encode(entity.getEmail());
 //            }
@@ -365,7 +425,10 @@ public class DataJdbc {
         // 排序下 根据CompanyId，管理员在上面 ，null 在下面
         companyList.sort(Comparator.comparing(CommonUserAndBizCompany::getCompanyId, Comparator.nullsLast(String::compareTo)));
 
+        int cnum=0;
         for (CommonUserAndBizCompany entity : companyList) {
+            System.out.println("正在处理公司数据["+cnum+"]："+entity.getUsername());
+            cnum++;
             createTime = null;
 
             if(StrUtil.isNotBlank(entity.getEmail())){
@@ -454,7 +517,7 @@ public class DataJdbc {
                 //entity.getAuditStatus()
                 String ststus = entity.getAuditStatus();
                 String ststus2 = entity.getAuditStatus();
-                if(ststus==null){
+                if(ststus!=null){
                     ststus2 = constantMap.get(ststus);
                 }else{
                     ststus2 = "310";
@@ -516,23 +579,33 @@ public class DataJdbc {
                 description = entity.getIntroduction();
                 if("".equals(description)){
                     description = "NULL";
+                }else{
+                    description = "'"+description+"'";
                 }
-                description = "'"+description+"'";
+
+                //企业规模
+                String scale = "";
+                scale = constantMap.getOrDefault(entity.getEmployeeCount(),"");
+                if("".equals(scale)){
+                    scale = "NULL";
+                }else{
+                    scale = "'"+scale+"'";
+                }
 
 
                 if(disableTime==null&&type == null){
                     upmsorgSql = "INSERT INTO `upms_org`(`id`, `parent_id`, `group_id`, `create_time`, `update_time`, `credit_code`, `name`, `abbreviation`, `type`, `registered_address`, `office_address`, `establishment_date`, `area`, `area_id`, `street`, `doorplate`, `lat`, `lng`, `representative`, `create_by`, `update_by`, `domain`, `logo`, `licenses`, `status`, `status_desc`, `description`, `photos`, `videos`, `official_website`, `resource`, `industry`, `progress_phase`, `scale`, `address`, `disable_time`, `contact_phone`, `contact_name`, `contact_email`, `sort_num`,`contact_post`) VALUES " +
-                            "(" + orgId + ", NULL, NULL, " + createTime + ", '" + updateTime + "', '" + entity.getOrgCode() + "', '" + entity.getCompanyName2() + "', '" + entity.getCompanyShortName() + "', NULL, '', '', '" + setUpTime + "', "+area+", "+area_id+", "+street+", "+doorplate+", "+lat+", "+lng+", '" + entity.getCorporateRepresentative() + "', 1, 1, NULL, " + logo + ", " + license + ", '" + ststus2 + "', '" + entity.getAuditRemark() + "',"+description+", NULL, NULL, '" + entity.getWebsite() + "', NULL, "+industry+", NULL, NULL, '" + entity.getAddress() + "', NULL , '" + entity.getContactPhone() + "', '" + entity.getContactName() + "', '" + entity.getContactEmail() + "', -1,'" + entity.getContactPosition() + "');";
+                            "(" + orgId + ", NULL, NULL, " + createTime + ", '" + updateTime + "', '" + entity.getOrgCode() + "', '" + entity.getCompanyName2() + "', '" + entity.getCompanyShortName() + "', NULL, '', '', '" + setUpTime + "', "+area+", "+area_id+", "+street+", "+doorplate+", "+lat+", "+lng+", '" + entity.getCorporateRepresentative() + "', 1, 1, NULL, " + logo + ", " + license + ", '" + ststus2 + "', '" + entity.getAuditRemark() + "',"+description+", NULL, NULL, '" + entity.getWebsite() + "', NULL, "+industry+", NULL, "+scale+", '" + entity.getAddress() + "', NULL , '" + entity.getContactPhone() + "', '" + entity.getContactName() + "', '" + entity.getContactEmail() + "', -1,'" + entity.getContactPosition() + "');";
 
                 }else if(disableTime!=null&&type==null){
                     upmsorgSql = "INSERT INTO `upms_org`(`id`, `parent_id`, `group_id`, `create_time`, `update_time`, `credit_code`, `name`, `abbreviation`, `type`, `registered_address`, `office_address`, `establishment_date`, `area`, `area_id`, `street`, `doorplate`, `lat`, `lng`, `representative`, `create_by`, `update_by`, `domain`, `logo`, `licenses`, `status`, `status_desc`, `description`, `photos`, `videos`, `official_website`, `resource`, `industry`, `progress_phase`, `scale`, `address`, `disable_time`, `contact_phone`, `contact_name`, `contact_email`, `sort_num`,`contact_post`) VALUES " +
-                            "(" + orgId + ", NULL, NULL, " + createTime + ", '" + updateTime + "', '" + entity.getOrgCode() + "', '" + entity.getCompanyName2() + "', '" + entity.getCompanyShortName() + "', NULL, '', '', '" + setUpTime + "', "+area+", "+area_id+", "+street+", "+doorplate+", "+lat+", "+lng+", '" + entity.getCorporateRepresentative() + "', 1, 1, NULL, " + logo + ", " + license + ", '" + ststus2 + "', '" + entity.getAuditRemark() + "',"+description+", NULL, NULL, '" + entity.getWebsite() + "', NULL, "+industry+", NULL, NULL, '" + entity.getAddress() + "', '" + disableTime + "', '" + entity.getContactPhone() + "', '" + entity.getContactName() + "', '" + entity.getContactEmail() + "', -1,'" + entity.getContactPosition() + "');";
+                            "(" + orgId + ", NULL, NULL, " + createTime + ", '" + updateTime + "', '" + entity.getOrgCode() + "', '" + entity.getCompanyName2() + "', '" + entity.getCompanyShortName() + "', NULL, '', '', '" + setUpTime + "', "+area+", "+area_id+", "+street+", "+doorplate+", "+lat+", "+lng+", '" + entity.getCorporateRepresentative() + "', 1, 1, NULL, " + logo + ", " + license + ", '" + ststus2 + "', '" + entity.getAuditRemark() + "',"+description+", NULL, NULL, '" + entity.getWebsite() + "', NULL, "+industry+", NULL, "+scale+", '" + entity.getAddress() + "', '" + disableTime + "', '" + entity.getContactPhone() + "', '" + entity.getContactName() + "', '" + entity.getContactEmail() + "', -1,'" + entity.getContactPosition() + "');";
                 }else if(disableTime==null&&type!=null){
                     upmsorgSql = "INSERT INTO `upms_org`(`id`, `parent_id`, `group_id`, `create_time`, `update_time`, `credit_code`, `name`, `abbreviation`, `type`, `registered_address`, `office_address`, `establishment_date`, `area`, `area_id`, `street`, `doorplate`, `lat`, `lng`, `representative`, `create_by`, `update_by`, `domain`, `logo`, `licenses`, `status`, `status_desc`, `description`, `photos`, `videos`, `official_website`, `resource`, `industry`, `progress_phase`, `scale`, `address`, `disable_time`, `contact_phone`, `contact_name`, `contact_email`, `sort_num`,`contact_post`) VALUES " +
-                            "(" + orgId + ", NULL, NULL, " + createTime + ", '" + updateTime + "', '" + entity.getOrgCode() + "', '" + entity.getCompanyName2() + "', '" + entity.getCompanyShortName() + "', '"+type+"', '', '', '" + setUpTime + "',"+area+", "+area_id+", "+street+", "+doorplate+", "+lat+", "+lng+", '" + entity.getCorporateRepresentative() + "', 1, 1, NULL, " + logo + ", " + license + ", '" + ststus2 + "', '" + entity.getAuditRemark() + "',"+description+", NULL, NULL, '" + entity.getWebsite() + "', NULL, "+industry+", NULL, NULL, '" + entity.getAddress() + "', NULL, '" + entity.getContactPhone() + "', '" + entity.getContactName() + "', '" + entity.getContactEmail() + "', -1,'" + entity.getContactPosition() + "');";
+                            "(" + orgId + ", NULL, NULL, " + createTime + ", '" + updateTime + "', '" + entity.getOrgCode() + "', '" + entity.getCompanyName2() + "', '" + entity.getCompanyShortName() + "', '"+type+"', '', '', '" + setUpTime + "',"+area+", "+area_id+", "+street+", "+doorplate+", "+lat+", "+lng+", '" + entity.getCorporateRepresentative() + "', 1, 1, NULL, " + logo + ", " + license + ", '" + ststus2 + "', '" + entity.getAuditRemark() + "',"+description+", NULL, NULL, '" + entity.getWebsite() + "', NULL, "+industry+", NULL, "+scale+", '" + entity.getAddress() + "', NULL, '" + entity.getContactPhone() + "', '" + entity.getContactName() + "', '" + entity.getContactEmail() + "', -1,'" + entity.getContactPosition() + "');";
                 }else{
                     upmsorgSql = "INSERT INTO `upms_org`(`id`, `parent_id`, `group_id`, `create_time`, `update_time`, `credit_code`, `name`, `abbreviation`, `type`, `registered_address`, `office_address`, `establishment_date`, `area`, `area_id`, `street`, `doorplate`, `lat`, `lng`, `representative`, `create_by`, `update_by`, `domain`, `logo`, `licenses`, `status`, `status_desc`, `description`, `photos`, `videos`, `official_website`, `resource`, `industry`, `progress_phase`, `scale`, `address`, `disable_time`, `contact_phone`, `contact_name`, `contact_email`, `sort_num`,`contact_post`) VALUES " +
-                            "(" + orgId + ", NULL, NULL, " + createTime + ", '" + updateTime + "', '" + entity.getOrgCode() + "', '" + entity.getCompanyName2() + "', '" + entity.getCompanyShortName() + "', '"+type+"', '', '', '" + setUpTime + "',"+area+", "+area_id+", "+street+", "+doorplate+", "+lat+", "+lng+", '" + entity.getCorporateRepresentative() + "', 1, 1, NULL, " + logo + ", " + license + ", '" + ststus2 + "', '" + entity.getAuditRemark() + "',"+description+", NULL, NULL, '" + entity.getWebsite() + "', NULL, "+industry+", NULL, NULL, '" + entity.getAddress() + "',  '" + disableTime + "', '" + entity.getContactPhone() + "', '" + entity.getContactName() + "', '" + entity.getContactEmail() + "', -1,'" + entity.getContactPosition() + "');";
+                            "(" + orgId + ", NULL, NULL, " + createTime + ", '" + updateTime + "', '" + entity.getOrgCode() + "', '" + entity.getCompanyName2() + "', '" + entity.getCompanyShortName() + "', '"+type+"', '', '', '" + setUpTime + "',"+area+", "+area_id+", "+street+", "+doorplate+", "+lat+", "+lng+", '" + entity.getCorporateRepresentative() + "', 1, 1, NULL, " + logo + ", " + license + ", '" + ststus2 + "', '" + entity.getAuditRemark() + "',"+description+", NULL, NULL, '" + entity.getWebsite() + "', NULL, "+industry+", NULL, "+scale+", '" + entity.getAddress() + "',  '" + disableTime + "', '" + entity.getContactPhone() + "', '" + entity.getContactName() + "', '" + entity.getContactEmail() + "', -1,'" + entity.getContactPosition() + "');";
                 }
                 upmsOrgSql.add(upmsorgSql);
 
@@ -562,9 +635,14 @@ public class DataJdbc {
             }else if(StrUtil.isNotBlank(entity.getRelationId())){ //企业的非管理员用户
                 String userpassId = "166198775" + RandomUtil.randomNumbers(10);
                 if(!CompanyPassMap.containsKey(entity.getRelationId())){
-                    throw new Exception(entity.getRelationId()+"未录入");
+//                    throw new Exception(entity.getRelationId()+"未录入");
+
+                    System.out.println("-- 有异常数据！！！");
+                    System.out.println("-- "+ entity.getRelationId()+"未录入");
+                    exceptionSql.add("-- "+entity.getUserId()+":"+entity.getUsername()+":"+entity.getRelationId());
+                    continue;
                 }
-                String passId = CompanyPassMap.get(entity.getRelationId());
+                String passId = CompanyPassMap.getOrDefault(entity.getRelationId(),"yicang");
                 //添加upms_user_pass
                 String upmsuserpassSql = "INSERT INTO `upms_user_pass`(`id`, `user_id`, `pass_id`, `create_time`, `update_time`, `status`) VALUES " +
                         "("+userpassId+", "+id+", "+passId+", "+createTime+", '"+updateTime+"', NULL);";
@@ -607,11 +685,11 @@ public class DataJdbc {
     public void initMap(){
 
         //02企业状态
-        constantMap.put("null","310");
-        constantMap.put("0","311");
-//        constantMap.put("2","312");
+//        constantMap.put("null","310");
+        constantMap.put("0","310");
+        constantMap.put("1","311");
+        constantMap.put("2","312");
         constantMap.put("3","313");
-        constantMap.put("2","314");
         //03公司规模
         constantMap.put("GSGM0101","304");
         constantMap.put("GSGM0102","305");
@@ -839,6 +917,12 @@ public class DataJdbc {
         accountAndPass.forEach(System.out::println);
         System.out.println("--  账号密码");
 
+        System.out.println("--  异常账号");
+        exceptionSql.forEach(System.out::println);
+        System.out.println("--  异常账号");
+
+
+
 
     }
 
@@ -852,8 +936,19 @@ public class DataJdbc {
 //            dataJdbc.getFileIdByUrl("http://cdndevstore.myjob500.com/myjob-upload/images/20190718/6369902495162143592993937.png&filename=test.png");
 //            dataJdbc.getAddress(" 上海浦东南路256号28～32层");
 
-            dataJdbc.toCommonUserAndBizStudent();
-            dataJdbc.toCommonUserAndBizCompany();
+            Integer commonUserAndBizStudentCount = dataJdbc.commonUserAndBizStudentCount();
+            Integer commonUserAndBizCompanyCount = dataJdbc.commonUserAndBizCompanyCount();
+
+            int pageSize = 100;
+            int studentPageCount = commonUserAndBizStudentCount%pageSize==0?commonUserAndBizStudentCount/pageSize:commonUserAndBizStudentCount/pageSize+1;
+            int companyPageCount = commonUserAndBizCompanyCount%pageSize==0?commonUserAndBizCompanyCount/pageSize:commonUserAndBizCompanyCount/pageSize+1;
+
+            for(int i=1;i<studentPageCount;i++){
+                dataJdbc.toCommonUserAndBizStudent(String.valueOf(i),String.valueOf(pageSize));
+            }
+            for(int i=1;i<companyPageCount;i++){
+                dataJdbc.toCommonUserAndBizCompany(String.valueOf(i),String.valueOf(pageSize));
+            }
             dataJdbc.CommonUserAndBizStudent2upmsUser();
             dataJdbc.CommonUserAndBizCompany2upmsUser();
             dataJdbc.out();
