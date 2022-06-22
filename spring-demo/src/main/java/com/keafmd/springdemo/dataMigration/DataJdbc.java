@@ -71,9 +71,9 @@ public class DataJdbc {
 
     public void init() throws ClassNotFoundException {
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        String dburl = "jdbc:sqlserver://10.82.26.150:1433;DatabaseName=master";
-        String user = "sa";
-        String password = "Password@";
+        String dburl = "jdbc:sqlserver://**:**;DatabaseName=master";
+        String user = "**";
+        String password = "****";
         try {
             connection = java.sql.DriverManager.getConnection(dburl, user, password);
             System.out.println(connection);
