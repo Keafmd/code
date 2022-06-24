@@ -1,4 +1,4 @@
-package keafmd.accumulate.test;
+package pers.keafmd.accumulate.test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

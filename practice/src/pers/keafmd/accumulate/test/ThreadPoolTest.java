@@ -1,4 +1,4 @@
-package pers.keafmd.accumulate.test;
+package pers.pers.keafmd.accumulate.test;
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 

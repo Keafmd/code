@@ -1,6 +1,6 @@
-package pers.keafmd.accumulate.test;
+package pers.pers.keafmd.accumulate.test;
 
-import keafmd.accumulate.temp.Td02;
+import pers.keafmd.accumulate.temp.Td02;
 
 /**
  * Keafmd

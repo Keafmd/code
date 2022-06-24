@@ -1,4 +1,4 @@
-package pers.keafmd.accumulate.copilot;
+package pers.pers.keafmd.accumulate.copilot;
 
 /**
  * Keafmd

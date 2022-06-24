@@ -44,7 +44,7 @@
 
 // 找出数组中的所有孤独数字
 // 做题时间：2022-03-21 10:29:59
-package pers.keafmd.accumulate.leetcode.day01;
+package pers.pers.keafmd.accumulate.leetcode.day01;
 
 import java.util.*;
 import java.util.stream.Collectors;

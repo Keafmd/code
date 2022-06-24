@@ -1,4 +1,4 @@
-package keafmd.accumulate.codeinterviewguide.stackwithgetmin;
+package pers.keafmd.accumulate.codeinterviewguide.stackwithgetmin;
 
 import java.util.Stack;
 

@@ -1,4 +1,4 @@
-package keafmd.accumulate.designmode.factorymode;
+package pers.keafmd.accumulate.designmode.factorymode;
 
 import java.util.Scanner;
 

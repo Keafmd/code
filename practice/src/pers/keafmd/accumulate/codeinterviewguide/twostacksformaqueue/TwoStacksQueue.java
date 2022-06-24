@@ -1,4 +1,4 @@
-package keafmd.accumulate.codeinterviewguide.twostacksformaqueue;
+package pers.keafmd.accumulate.codeinterviewguide.twostacksformaqueue;
 
 import java.util.Stack;
 
