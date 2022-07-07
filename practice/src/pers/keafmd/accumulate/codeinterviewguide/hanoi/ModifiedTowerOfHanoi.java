@@ -94,6 +94,7 @@ public class ModifiedTowerOfHanoi {
             System.out.println("Move " + tStack.peek() + " from " + from + " to " + to);
             record[0] = nowAct;
             return 1;
+            // tt
         }
         return 0;
     }
